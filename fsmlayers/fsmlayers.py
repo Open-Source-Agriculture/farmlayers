@@ -1,5 +1,5 @@
 from datetime import datetime
-from download_inputs import download_inputs
+from .download_inputs import download_inputs
 from functools import reduce
 from typing import List
 
@@ -7,8 +7,11 @@ from shapely.geometry import Point, Polygon, MultiPolygon
 from pylandsat import Catalog, Product, Scene
 
 from geotiff import GeoTiff
-from fsm.models.boundary import Boundary
-from fsm.helpers.shp_converter import shpToBoundaries
+
+# from fsm.models.boundary import Boundary
+# from fsm.helpers.shp_converter import shpToBoundaries
+
+from .shp_helpers import Boundary, shpToBoundaries
 
 import os
 import numpy as np
@@ -140,57 +143,3 @@ elevation, ele_col, ele_row = get_tiff_array(area_box, geotiff_elevation())
 # u_gamma, u_row, u_col = get_tiff_array(area_box, "data/gamma/Radmap2019-grid-u_conc-Filtered-AWAGS_RAD_2019.tif", crs_code=4236)
 # k_gamma = get_tiff_array(area_box, "data/gamma/Radmap2019-grid-k_conc-Filtered-AWAGS_RAD_2019.tif", crs_code=4236)
 # th_gamma = get_tiff_array(area_box, "data/gamma/Radmap2019-grid-th_conc-Filtered-AWAGS_RAD_2019.tif", crs_code=4236)
-
-from xarray import DataArray
-data_array = DataArray(data=elevation.astype(np.float32), coords=[ele_row, ele_col], dims=["lat", "lon"])
-ds = data_array.to_dataset(name="elevation")
-
-
-
-
-
-new_lon = np.linspace(ds.lon[0], ds.lon[-1], ds.dims["lon"] * 2)
-new_lat = np.linspace(ds.lat[0], ds.lat[-1], ds.dims["lat"] * 2)
-dsi = ds.interp(lat=new_lat[1:-1], lon=new_lon[1:-1])
-
-
-da = dsi.to_array(name="elevation")
-new_data_array = da.assign_coords({"lon": da.lon, "lat": da.lat})
-
-elevation_new = new_data_array[0]
-
-
-make_image(
-    "elevation_detailed.png",
-    elevation_new,
-    elevation_new,
-    elevation_new,
-    show_red=True,
-    show_green=True,
-    show_blue=True,
-)
-
-
-# from matplotlib import pyplot as plt
-# fig, axes = plt.subplots(ncols=2, figsize=(10, 4))
-# ds.air.plot(ax=axes[0])
-# axes[0].set_title("Raw data")
-# dsi.air.plot(ax=axes[1])
-# axes[1].set_title("Interpolated data")
-# plt.show()
-
-# * make images
-# make_image("red.png", red, green, blue, show_red=True)
-# make_image("green.png", red, green, blue, show_green=True)
-# make_image("blue.png", red, green, blue, show_blue=True)
-# make_image("rgb.png", red, green, blue, show_red=True,
-#            show_green=True, show_blue=True)
-
-# make_image("nir.png", nir, nir, nir, show_red=True)
-# make_ndvi_image("ndvi.png", red, nir)
-
-# make_image("elevation.png", elevation, elevation, elevation, show_red=True,
-#            show_green=True, show_blue=True)
-# make_image("u_gamma.png", u_gamma, u_gamma, u_gamma, show_red=True)
-# make_image("k_gamma.png", k_gamma, k_gamma, k_gamma, show_blue=True)
-# make_image("th_gamma.png", th_gamma, th_gamma, th_gamma, show_green=True)

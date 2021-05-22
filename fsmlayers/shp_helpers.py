@@ -3,6 +3,7 @@ import shapefile
 
 from geojson import Polygon, MultiPolygon
 
+
 class Boundary(object):
     def __init__(self, lonLatData: list, boundsBox: list = None):
         """Boundary
@@ -11,7 +12,7 @@ class Boundary(object):
             latLonData (list): [[x,y]...[x,y]]
             boundsBox (list): [minx, miny, maxx, maxy]
         """
-        self.lonLatData = lonLatData 
+        self.lonLatData = lonLatData
         self.geojson_polygon: Polygon = Polygon(coordinates=self.lonLatData)
         self.latLonData = [[[l[1], l[0]] for l in lst] for lst in lonLatData]
         self.mainBoundaryPoints = lonLatData[0]
@@ -41,7 +42,7 @@ def shpToBoundaries(shpFile: str) -> List[Boundary]:
     # For getting the bounding box
     boundaries = []
     if sf.shapeType != 5:
-        errmsg ="Must provide a shape file of type POLYGON"
+        errmsg = "Must provide a shape file of type POLYGON"
         raise Exception(errmsg)
     else:
         shapes = sf.shapes()
@@ -57,8 +58,8 @@ def shpToBoundaries(shpFile: str) -> List[Boundary]:
             outList.reverse()
             # List[List[List[Tuple[float,float]]]]
             boundaries.append(Boundary(outList, s.bbox))
-    return(boundaries)
-        
+    return boundaries
+
 
 def shpToBoundary(shpFile: str) -> Boundary:
     """Uses the first polygon in the shp file to create a Boundary
@@ -75,7 +76,7 @@ def shpToBoundary(shpFile: str) -> Boundary:
     # For getting the bounding box
     boundaries = []
     if sf.shapeType != 5:
-        errmsg ="Must provide a shape file of type POLYGON"
+        errmsg = "Must provide a shape file of type POLYGON"
         raise Exception(errmsg)
     else:
         shapes = sf.shapes()
@@ -91,5 +92,4 @@ def shpToBoundary(shpFile: str) -> Boundary:
             outList.reverse()
             # List[List[List[Tuple[float,float]]]]
             boundaries.append(Boundary(outList, s.bbox))
-    return(boundaries[0])
-        
+    return boundaries[0]
