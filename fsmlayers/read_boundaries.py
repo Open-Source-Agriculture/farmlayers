@@ -1,7 +1,7 @@
 from shapely.geometry import Polygon, MultiPolygon  # type: ignore
-from typing import List # type: ignore
-from geojson import load # type: ignore
-import shapefile # type: ignore
+from typing import List  # type: ignore
+from geojson import load  # type: ignore
+import shapefile  # type: ignore
 
 
 def geojson_to_boundaries(file: str) -> List[Polygon]:
@@ -21,7 +21,7 @@ def geojson_to_boundaries(file: str) -> List[Polygon]:
     return boundaries
 
 
-def shp_to_boundaries(file: str) ->  List[Polygon]:
+def shp_to_boundaries(file: str) -> List[Polygon]:
     """Takes a shape file and returns a list of boundary(s)
 
     Args:
