@@ -38,6 +38,7 @@ setuptools.setup(
         "pyshp==2.*",
         "Pillow",
         "elevation",
+        "imagecodecs",
     ],
 
 )

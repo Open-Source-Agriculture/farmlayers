@@ -6,3 +6,4 @@ geojson
 pyshp==2.*
 Pillow
 elevation==1.*
+imagecodecs
