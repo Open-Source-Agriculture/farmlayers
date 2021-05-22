@@ -30,7 +30,14 @@ setuptools.setup(
     ],
     python_requires='>=3.7',
     install_requires=[
-        
+        "Shapely==1.*",
+        "pylandsat == 0.6.*",
+        "geotiff==0.1.*",
+        "numpy",
+        "geojson",
+        "pyshp==2.*",
+        "Pillow",
+        "elevation",
     ],
 
 )
