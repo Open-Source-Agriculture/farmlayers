@@ -4,7 +4,7 @@ from geojson import load # type: ignore
 import shapefile # type: ignore
 
 
-def geojson_to_boundaries(file: str) -> MultiPolygon:
+def geojson_to_boundaries(file: str) -> List[Polygon]:
     geojson_f = open(file, "r")
     gj = load(geojson_f)
 
@@ -18,10 +18,10 @@ def geojson_to_boundaries(file: str) -> MultiPolygon:
                 boundary = Polygon(lonLatData=feature["geometry"]["coordinates"])
                 boundaries.append(boundary)
 
-    return MultiPolygon(polygons=boundaries)
+    return boundaries
 
 
-def shp_to_boundaries(file: str) -> MultiPolygon:
+def shp_to_boundaries(file: str) ->  List[Polygon]:
     """Takes a shape file and returns a list of boundary(s)
 
     Args:
@@ -51,4 +51,4 @@ def shp_to_boundaries(file: str) -> MultiPolygon:
             outList.reverse()
             poly = Polygon(outList[0], holes=outList[1:])
             boundaries.append(poly)
-        return MultiPolygon(polygons=boundaries)
+        return boundaries
