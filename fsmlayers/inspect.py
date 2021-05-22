@@ -1,17 +1,14 @@
 from datetime import datetime
 from .download_inputs import download_inputs
 from functools import reduce
-from typing import List
+from typing import Dict, List
 
 from shapely.geometry import Point, Polygon, MultiPolygon
 from pylandsat import Catalog, Product, Scene
 
 from geotiff import GeoTiff
 
-# from fsm.models.boundary import Boundary
-# from fsm.helpers.shp_converter import shpToBoundaries
 
-from .shp_helpers import Boundary, shpToBoundaries
 
 import os
 import numpy as np
@@ -21,13 +18,9 @@ from PIL import Image
 import math
 
 
-def get_paddock_polygons(file: str):
-    boundaries: List[Boundary] = shpToBoundaries(file)
-    polygons = [Polygon(b.mainBoundaryPoints) for b in boundaries]
-    return polygons
-
 
 def make_area_box(polygons: List[Polygon]):
+    # TODO use multi polygon instead
     right = math.inf
     top = -math.inf
     left = -math.inf
@@ -44,29 +37,24 @@ def make_area_box(polygons: List[Polygon]):
     return ((right, top), (left, bottom))
 
 
-def geotiff_files_first_scene():
-    data_folders = os.listdir("data")
-    data_folders.remove("boundary")
-    scene = Scene("data/" + data_folders[0])
-    available_bands = scene.available_bands()
-    geotiff_list = [
-        f"{scene.product_id}_B{i+1}.TIF" for i, e in enumerate(available_bands)
-    ]
-    geotiff_files = [os.path.join(scene.dir, g) for g in geotiff_list]
+def geotiff_files_first_scene(dir: str) -> Dict[str, List[str]]:
+    data_folders = [d for d in os.listdir(dir) if "LC08" in d]
+    scenes_dict = dict([(df, Scene(f"{dir}/" + df)) for df in data_folders])
+    def get_geotiff_files(scene: Scene):
+        available_bands = scene.available_bands()
+        geotiff_list = [
+            f"{scene.product_id}_B{i+1}.TIF" for i, e in enumerate(available_bands)
+        ]
+        geotiff_files = [os.path.join(scene.dir, g) for g in geotiff_list]
+        return(geotiff_files)
+    geotiff_files_dict = dict([(d, get_geotiff_files(s)) for d, s in scenes_dict.items()])
 
-    print(scene.product_id)
-    print(scene.sensor)
-    print(scene.date)
-
-    # # Access MTL metadata
-    print(scene.mtl["IMAGE_ATTRIBUTES"]["CLOUD_COVER_LAND"])
-    return geotiff_files
+    return geotiff_files_dict
 
 
 def get_tiff_array(area_box, tiff_location, crs_code=None):
     geotiff = GeoTiff(tiff_location, crs_code=crs_code)
     geotiff_array = geotiff.read_box(area_box)
-    print(geotiff_array.shape)
     int_box = geotiff.get_int_box(area_box)
 
     # TODO distribute with dask
@@ -81,9 +69,8 @@ def get_tiff_array(area_box, tiff_location, crs_code=None):
     return (geotiff_array, col, row)
 
 
-def make_image(
-    filename, red, green, blue, show_red=False, show_green=False, show_blue=False
-):
+def make_image(red, green, blue, show_red=False, show_green=False, show_blue=False
+) -> Image:
     def normalize(a):
         return 255 * ((a - np.amin(a)) / (np.amax(a) - np.amin(a)))
 
@@ -94,7 +81,7 @@ def make_image(
             normalize(blue) * int(show_blue),
         )
     )
-    Image.fromarray(color_img_array.astype(np.uint8)).save(filename)
+    return Image.fromarray(color_img_array.astype(np.uint8)) #.save(filename)
 
 
 def make_ndvi_image(filename, red, nir):
@@ -127,18 +114,37 @@ def geotiff_elevation():
     return os.path.join(elevation_dir, tiff_files[0])
 
 
-polygons = get_paddock_polygons("data/boundary/Speed with craig.shp")
-area_box = make_area_box(polygons)
+def inspect_images(dir: str, geom: MultiPolygon):
+    """Tool for inspecting the images. Useful to make sure there isn't any cloud cover.
+
+    Args:
+        dir (str): Directory where the data is stored
+        geom (MultiPolygon): Area of interest
+    """
+    for k, geotiff_files in geotiff_files_first_scene(dir).items():
+        print(f"Building: {k}")
+        b = geom.bounds
+        area_box = ((b[0], b[3]), (b[2], b[1]))
+        red = get_tiff_array(area_box, geotiff_files[3])[0]
+        green = get_tiff_array(area_box, geotiff_files[2])[0]
+        blue = get_tiff_array(area_box, geotiff_files[1])[0]
+        # nir = get_tiff_array(area_box, geotiff_files[4])
+        img = make_image(red, green, blue, show_red=True, show_green=True, show_blue=True)
+        img.show()
+
+
+# polygons = get_paddock_polygons("data/boundary/Speed with craig.shp")
+# area_box = make_area_box(polygons)
 
 # download_inputs(area_box, datetime(2020, 2, 20),  datetime(2020, 2, 22))
 
-geotiff_files = geotiff_files_first_scene()
+# geotiff_files = geotiff_files_first_scene()
 
 # red, red_row, red_col = get_tiff_array(area_box, geotiff_files[3])
 # green = get_tiff_array(area_box, geotiff_files[2])
 # blue = get_tiff_array(area_box, geotiff_files[1])
 # nir = get_tiff_array(area_box, geotiff_files[4])
-elevation, ele_col, ele_row = get_tiff_array(area_box, geotiff_elevation())
+# elevation, ele_col, ele_row = get_tiff_array(area_box, geotiff_elevation())
 
 # u_gamma, u_row, u_col = get_tiff_array(area_box, "data/gamma/Radmap2019-grid-u_conc-Filtered-AWAGS_RAD_2019.tif", crs_code=4236)
 # k_gamma = get_tiff_array(area_box, "data/gamma/Radmap2019-grid-k_conc-Filtered-AWAGS_RAD_2019.tif", crs_code=4236)

@@ -7,3 +7,5 @@ from .download_inputs import (
 )
 
 from .read_boundaries import shp_to_boundaries, geojson_to_boundaries
+
+from .inspect import inspect_images
