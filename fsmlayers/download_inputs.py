@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from shapely.geometry import Point, Polygon, MultiPolygon
 from pylandsat import Catalog, Product, Scene
 from shapely.wkt import loads
@@ -25,7 +25,7 @@ def dates_filter(early_month: int, later_month: int, acquisition_date: datetime)
 def download_month_range(
     scenes: List[Scene], geom: Polygon, early_month: int, later_month: int, dir: str
 ):
-    tif_poly: Polygon = loads(scenes[0]["geom"])
+    tif_poly: Polygon = loads(scenes[0]["geom"]) # TODO get more scenes !!!!
     filtered_scenes = [s for s in scenes if tif_poly.contains(geom)]
     products = [Product(s.get("product_id")) for s in filtered_scenes]
     acquisition_dates = [p.meta["acquisition_date"] for p in products]
@@ -51,7 +51,7 @@ def download_elevation(geom: Polygon, dir: str):
 
 
 def download_inputs(
-    geom: Polygon,
+    geom: Union[Polygon, MultiPolygon],
     dir: str,
     begin: datetime = datetime(2020, 1, 1),
     end: datetime = datetime(2021, 1, 1),
