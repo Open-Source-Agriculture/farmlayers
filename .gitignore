@@ -1,5 +1,6 @@
 # fsmlayers
 tute*
+*.shp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
