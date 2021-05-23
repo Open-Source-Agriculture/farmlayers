@@ -28,7 +28,7 @@ def dates_filter(early_month: int, later_month: int, acquisition_date: datetime)
         )
     else:
         to_download = (
-            acquisition_date.month > later_month or acquisition_date.month < early_month
+            (acquisition_date.month > early_month) or (acquisition_date.month < later_month)
         )
     return to_download
 
