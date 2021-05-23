@@ -39,11 +39,13 @@ def make_area_box(polygons: List[Polygon]):
 
 def geotiff_files_first_scene(dir: str) -> Dict[str, List[str]]:
     data_folders = [d for d in os.listdir(dir) if "LC08" in d]
-    scenes_dict = dict([(df, Scene(f"{dir}/" + df)) for df in data_folders])
+    print(data_folders)
+    scenes_dict = dict([(df, Scene(os.path.join(dir, df))) for df in data_folders])
     def get_geotiff_files(scene: Scene):
         available_bands = scene.available_bands()
+        print(available_bands)
         geotiff_list = [
-            f"{scene.product_id}_B{i+1}.TIF" for i, e in enumerate(available_bands)
+            f"{scene.product_id}_B{i+2}.TIF" for i, e in enumerate(available_bands)
         ]
         geotiff_files = [os.path.join(scene.dir, g) for g in geotiff_list]
         return(geotiff_files)
