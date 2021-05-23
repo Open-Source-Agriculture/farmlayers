@@ -14,14 +14,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 
 setuptools.setup(
-    name="fsmlayers",
+    name="farmlayers",
     version=VERSION,
     author="Kipling Crossing",
     author_email="kip.crossing@gmail.com",
-    description="Helper scripts for fetching and managing basic input layers for running the Farm Soil Mapping tools",
+    description="Helper scripts for fetching and managing basic input layers Farm Mapping",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Open-Source-Agriculture/fsm-layers",
+    url="https://github.com/Open-Source-Agriculture/farmlayers",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

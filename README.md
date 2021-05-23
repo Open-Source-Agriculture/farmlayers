@@ -1,4 +1,4 @@
-# fsm-layers
+# Farm Layers
 
 Helper scripts for fetching and managing basic geotiff files related to Farm Mapping
 
@@ -20,7 +20,7 @@ Australian Radiometric data
 Install:
 
 ```
-pip install ...
+pip install farmlayers
 ```
 
 Usage:
