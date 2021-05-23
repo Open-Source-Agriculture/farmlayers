@@ -1,6 +1,21 @@
 # fsm-layers
 
-Helper scripts for fetching and managing basic input layers for running the Farm Soil Mapping tools
+Helper scripts for fetching and managing basic geotiff files related to Farm Mapping
+
+Supports:
+
+- elevation
+- red bands
+- blue bands
+- green bands
+- near-inferred bands
+
+Coming:
+
+Australian Radiometric data
+- k gamma
+- u gamma
+- th gamma
 
 Install:
 
