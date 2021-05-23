@@ -119,6 +119,7 @@ def inspect_images(dir: str, geom: MultiPolygon):
         dir (str): Directory where the data is stored
         geom (MultiPolygon): Area of interest
     """
+    print("WARNING! this is unstable!")
     for k, geotiff_files in geotiff_files_first_scene(dir).items():
         print(f"Building: {k}")
         b = geom.bounds
