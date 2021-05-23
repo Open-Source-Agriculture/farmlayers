@@ -1,3 +1,4 @@
+import datetime as DT
 from datetime import datetime
 import os
 from typing import List, Tuple, Union
@@ -7,6 +8,14 @@ from shapely.wkt import loads
 import elevation
 import shutil
 
+
+
+tif_translate_dict = {
+    "B2.TIF": "blue.tif",
+    "B3.TIF": "green.tif",
+    "B4.TIF": "red.tif",
+    "B5.TIF": "nir.tif",
+}
 
 def dates_filter(early_month: int, later_month: int, acquisition_date: datetime):
     # can make this fancier
@@ -31,12 +40,24 @@ def download_month_range(
     filtered_scenes = [s for s in scenes if tif_poly.contains(geom)]
     products = [Product(s.get("product_id")) for s in filtered_scenes]
     acquisition_dates = [p.meta["acquisition_date"] for p in products]
+    # [print(p.available) for p in products]
     download_checks = [
         dates_filter(early_month, later_month, a_date) for a_date in acquisition_dates
     ]
     products_and_checks = list(zip(products, download_checks))
     products_to_download = [p_c[0] for p_c in products_and_checks if p_c[1]]
-    [product.download(out_dir=dir) for product in products_to_download]
+    for product in products_to_download:
+
+        product.download(out_dir=dir, files=['B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF'])
+        # # script to rename files
+        # date_path = os.path.join(dir , product.product_id)
+        # for tif_file in os.listdir(date_path):
+        #     tif_path = os.path.join(date_path, tif_file)
+        #     tif_suffix = tif_file[-6:]
+        #     new_file = os.path.join(date_path, tif_translate_dict[tif_suffix])
+        #     os.rename(tif_path, new_file)
+        # new_dir = os.path.join(dir ,product.product_id.split("_")[3])
+        # os.rename(os.path.join(dir, product.product_id), new_dir)
 
 
 def download_soil(scenes, geom, dir: str):
@@ -63,12 +84,12 @@ def download_elevation(geom: Polygon, dir: str):
 def download_inputs(
     geom: Union[Polygon, MultiPolygon],
     dir: str,
-    begin: datetime = datetime(2020, 1, 1),
-    end: datetime = datetime(2021, 1, 1),
+    begin: datetime = datetime.now() - DT.timedelta(days=365),
+    end: datetime = datetime.now(),
 ):
 
     catalog = Catalog()
-    scenes = catalog.search(begin=begin, end=end, geom=geom, sensors=["LE07", "LC08"])
+    scenes = catalog.search(begin=begin, end=end, geom=geom, sensors=["LC08"])
 
     download_soil(scenes, geom, dir)
     download_elevation(geom, dir)
