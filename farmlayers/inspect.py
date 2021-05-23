@@ -38,11 +38,9 @@ def make_area_box(polygons: List[Polygon]):
 
 def geotiff_files_first_scene(dir: str) -> Dict[str, List[str]]:
     data_folders = [d for d in os.listdir(dir) if "LC08" in d]
-    print(data_folders)
     scenes_dict = dict([(df, Scene(os.path.join(dir, df))) for df in data_folders])
     def get_geotiff_files(scene: Scene):
         available_bands = scene.available_bands()
-        print(available_bands)
         geotiff_list = [
             f"{scene.product_id}_B{i+2}.TIF" for i, e in enumerate(available_bands)
         ]
@@ -56,18 +54,18 @@ def geotiff_files_first_scene(dir: str) -> Dict[str, List[str]]:
 def get_tiff_array(area_box, tiff_location, crs_code=None):
     geotiff = GeoTiff(tiff_location, crs_code=crs_code)
     geotiff_array = geotiff.read_box(area_box)
-    int_box = geotiff.get_int_box(area_box)
+    # int_box = geotiff.get_int_box(area_box)
 
-    # TODO distribute with dask
-    to_row = np.arange(0, geotiff_array.shape[0])
-    get_lon = lambda j: geotiff.get_wgs_84_coords(int_box[0][0], int_box[0][1] + j)[1]
-    row = np.vectorize(get_lon)(to_row)
+    # # TODO distribute with dask
+    # to_row = np.arange(0, geotiff_array.shape[0])
+    # get_lon = lambda j: geotiff.get_wgs_84_coords(int_box[0][0], int_box[0][1] + j)[1]
+    # row = np.vectorize(get_lon)(to_row)
 
-    to_col = np.arange(0, geotiff_array.shape[1])
-    get_col = lambda i: geotiff.get_wgs_84_coords(int_box[0][0] + i, int_box[0][1])[0]
-    col = np.vectorize(get_col)(to_col)
+    # to_col = np.arange(0, geotiff_array.shape[1])
+    # get_col = lambda i: geotiff.get_wgs_84_coords(int_box[0][0] + i, int_box[0][1])[0]
+    # col = np.vectorize(get_col)(to_col)
 
-    return (geotiff_array, col, row)
+    return (geotiff_array)
 
 
 def make_image(red, green, blue, show_red=False, show_green=False, show_blue=False
@@ -108,7 +106,6 @@ def geotiff_elevation():
     elevation_zones_dir = "data/SRTM1/cache/"
     elevation_dir_name = os.listdir(elevation_zones_dir)[0]
     elevation_dir = os.path.join(elevation_zones_dir, elevation_dir_name)
-    print(elevation_dir)
     tiff_files = [f for f in os.listdir(elevation_dir) if f[-4:] == ".tif"]
     if len(tiff_files) > 0:
         print("WARNING! this area consists of multiple tiff files!!!")
@@ -126,9 +123,9 @@ def inspect_images(dir: str, geom: MultiPolygon):
         print(f"Building: {k}")
         b = geom.bounds
         area_box = ((b[0], b[3]), (b[2], b[1]))
-        red = get_tiff_array(area_box, geotiff_files[3])[0]
-        green = get_tiff_array(area_box, geotiff_files[2])[0]
-        blue = get_tiff_array(area_box, geotiff_files[1])[0]
+        red = get_tiff_array(area_box, geotiff_files[3])
+        green = get_tiff_array(area_box, geotiff_files[2])
+        blue = get_tiff_array(area_box, geotiff_files[1])
         # nir = get_tiff_array(area_box, geotiff_files[4])
         img = make_image(red, green, blue, show_red=True, show_green=True, show_blue=True)
         img.show()
