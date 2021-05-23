@@ -1,9 +1,11 @@
 from datetime import datetime
+import os
 from typing import List, Tuple, Union
 from shapely.geometry import Point, Polygon, MultiPolygon
 from pylandsat import Catalog, Product, Scene
 from shapely.wkt import loads
 import elevation
+import shutil
 
 
 def dates_filter(early_month: int, later_month: int, acquisition_date: datetime):
@@ -48,6 +50,14 @@ def download_crop(scenes, geom, dir: str):
 def download_elevation(geom: Polygon, dir: str):
     bounds = geom.bounds  # left, bottom, right top
     elevation.seed(cache_dir=dir, bounds=bounds)
+    cache_dir = os.path.join(dir, "SRTM1/cache")
+    c_dir = os.listdir(cache_dir)[0]
+    c_files = os.listdir(os.path.join(cache_dir, c_dir))
+    c_elevation = [f for f in c_files if f[-4:]==".tif"][0]
+    c_path = os.path.join(os.path.join(cache_dir, c_dir), c_elevation)
+    os.rename(c_path, os.path.join(dir, "elevation.tif"))
+    shutil.rmtree(os.path.join(dir, "SRTM1"))
+
 
 
 def download_inputs(
