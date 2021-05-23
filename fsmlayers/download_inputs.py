@@ -47,8 +47,9 @@ def download_month_range(
     products_and_checks = list(zip(products, download_checks))
     products_to_download = [p_c[0] for p_c in products_and_checks if p_c[1]]
     for product in products_to_download:
+        print(product.available)
 
-        product.download(out_dir=dir, files=['B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF'])
+        product.download(out_dir=dir, files=['B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'MTL.txt'])
         # # script to rename files
         # date_path = os.path.join(dir , product.product_id)
         # for tif_file in os.listdir(date_path):
