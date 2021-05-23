@@ -1,5 +1,4 @@
 from datetime import datetime
-from .download_inputs import download_inputs
 from functools import reduce
 from typing import Dict, List
 
