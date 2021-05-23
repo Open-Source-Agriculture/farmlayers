@@ -1,4 +1,4 @@
-# Farm Layers
+# Farm Layers [early stages of dev]
 
 Helper scripts for fetching and managing basic geotiff files related to Farm Mapping
 
