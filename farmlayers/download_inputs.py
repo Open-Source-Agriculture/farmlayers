@@ -61,11 +61,27 @@ def download_month_range(
         # os.rename(os.path.join(dir, product.product_id), new_dir)
 
 
-def download_soil(scenes, geom, dir: str):
+def download_soil(
+    geom: Union[Polygon, MultiPolygon], 
+    dir: str,
+    begin: datetime = datetime.now() - DT.timedelta(days=365),
+    end: datetime = datetime.now(),
+    ):
+
+    catalog = Catalog()
+    scenes = catalog.search(begin=begin, end=end, geom=geom, sensors=["LC08"])
     download_month_range(scenes, geom, 10, 3, dir)
 
 
-def download_crop(scenes, geom, dir: str):
+def download_crop(
+    geom: Union[Polygon, MultiPolygon], 
+    dir: str,
+    begin: datetime = datetime.now() - DT.timedelta(days=365),
+    end: datetime = datetime.now(),
+    ):
+
+    catalog = Catalog()
+    scenes = catalog.search(begin=begin, end=end, geom=geom, sensors=["LC08"])
     download_month_range(scenes, geom, 5, 9, dir)
 
 
@@ -80,17 +96,3 @@ def download_elevation(geom: Polygon, dir: str):
     os.rename(c_path, os.path.join(dir, "elevation.tif"))
     shutil.rmtree(os.path.join(dir, "SRTM1"))
 
-
-
-def download_inputs(
-    geom: Union[Polygon, MultiPolygon],
-    dir: str,
-    begin: datetime = datetime.now() - DT.timedelta(days=365),
-    end: datetime = datetime.now(),
-):
-
-    catalog = Catalog()
-    scenes = catalog.search(begin=begin, end=end, geom=geom, sensors=["LC08"])
-
-    download_soil(scenes, geom, dir)
-    download_elevation(geom, dir)
