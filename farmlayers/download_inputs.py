@@ -70,7 +70,7 @@ def download_soil(
 
     catalog = Catalog()
     scenes = catalog.search(begin=begin, end=end, geom=geom, sensors=["LC08"])
-    download_month_range(scenes, geom, 10, 3, dir)
+    download_month_range(scenes, geom, 11, 3, dir)
 
 
 def download_crop(
@@ -82,7 +82,7 @@ def download_crop(
 
     catalog = Catalog()
     scenes = catalog.search(begin=begin, end=end, geom=geom, sensors=["LC08"])
-    download_month_range(scenes, geom, 5, 9, dir)
+    download_month_range(scenes, geom, 5, 10, dir)
 
 
 def download_elevation(geom: Polygon, dir: str):
