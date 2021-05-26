@@ -112,7 +112,7 @@ def geotiff_elevation():
     return os.path.join(elevation_dir, tiff_files[0])
 
 
-def inspect_images(dir: str, geom: MultiPolygon):
+def inspect_images(dir: str, geom: MultiPolygon, out_dir: str=""):
     """Tool for inspecting the images. Useful to make sure there isn't any cloud cover.
 
     Args:
@@ -129,7 +129,7 @@ def inspect_images(dir: str, geom: MultiPolygon):
         blue = get_tiff_array(area_box, geotiff_files[1])
         # nir = get_tiff_array(area_box, geotiff_files[4])
         img = make_image(red, green, blue, show_red=True, show_green=True, show_blue=True)
-        img.show()
+        img.save(os.path.join(out_dir, f"{k}.png"))
 
 
 # polygons = get_paddock_polygons("data/boundary/Speed with craig.shp")
