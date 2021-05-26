@@ -8,3 +8,4 @@ Pillow
 elevation==1.*
 imagecodecs
 pytest
+wheel
