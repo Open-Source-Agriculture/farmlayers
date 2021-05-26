@@ -25,7 +25,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        # "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)", #TODO
+        # "License :: OSI Approved :: Apache Software License", #TODO
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.7',
